@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Pressable, Text, TouchableOpacity, View} from 'react-native-macos';
+import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 
 const CommonButton = () => {
   const [test, setTest] = useState(1);
@@ -7,7 +7,7 @@ const CommonButton = () => {
     <Pressable
       // eslint-disable-next-line react-native/no-inline-styles
       focusable={true}
-      onMouseEnter={() => {
+      onPress={() => {
         alert('adsf');
       }}
       style={{

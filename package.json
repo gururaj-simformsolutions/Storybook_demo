@@ -18,6 +18,7 @@
     "enzyme-adapter-react-16": "^1.15.6",
     "jest-environment-enzyme": "^7.1.2",
     "jest-enzyme": "^7.1.2",
+    "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-macos": "^0.63.0-0"

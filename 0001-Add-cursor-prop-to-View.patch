@@ -1,0 +1,332 @@
+From fecfe8ae18f2c08e51174b750f1ae6e8f0deee9b Mon Sep 17 00:00:00 2001
+From: Liron Yahdav <lyahdav@fb.com>
+Date: Mon, 19 Apr 2021 13:01:44 -0600
+Subject: [PATCH] Add cursor prop to View
+
+---
+ .../Components/View/ReactNativeViewViewConfig.js   |  1 +
+ .../View/ReactNativeViewViewConfigMacOS.js         |  5 +-
+ Libraries/StyleSheet/StyleSheetTypes.js            | 22 +++++++
+ RNTester/js/examples/View/ViewExample.js           | 60 +++++++++++++++++++
+ React/Views/RCTView.h                              | 25 ++++++++
+ React/Views/RCTView.m                              | 67 ++++++++++++++++++++++
+ React/Views/RCTViewManager.m                       | 34 +++++++++++
+ 7 files changed, 212 insertions(+), 2 deletions(-)
+
+diff --git a/Libraries/Components/View/ReactNativeViewViewConfig.js b/Libraries/Components/View/ReactNativeViewViewConfig.js
+index f14e672f813..557313d87bb 100644
+--- a/Libraries/Components/View/ReactNativeViewViewConfig.js
++++ b/Libraries/Components/View/ReactNativeViewViewConfig.js
+@@ -262,6 +262,7 @@ const ReactNativeViewConfig = {
+       borderWidth: true,
+       bottom: true,
+       color: {process: require('../../StyleSheet/processColor')},
++      cursor: true,
+       decomposedMatrix: true,
+       direction: true,
+       display: true,
+diff --git a/Libraries/Components/View/ReactNativeViewViewConfigMacOS.js b/Libraries/Components/View/ReactNativeViewViewConfigMacOS.js
+index 291bd7b7f9a..744c90d4dad 100644
+--- a/Libraries/Components/View/ReactNativeViewViewConfigMacOS.js
++++ b/Libraries/Components/View/ReactNativeViewViewConfigMacOS.js
+@@ -38,6 +38,7 @@ const ReactNativeViewViewConfigMacOS = {
+     acceptsFirstMouse: true,
+     acceptsKeyboardFocus: true,
+     accessibilityTraits: true,
++    cursor: true,
+     draggedTypes: true,
+     enableFocusRing: true,
+     onBlur: true,
+@@ -49,11 +50,11 @@ const ReactNativeViewViewConfigMacOS = {
+     onFocus: true,
+     onKeyDown: true,
+     onKeyUp: true,
+-    validKeysDown: true,
+-    validKeysUp: true,
+     onMouseEnter: true,
+     onMouseLeave: true,
+     tooltip: true,
++    validKeysDown: true,
++    validKeysUp: true,
+   },
+ };
+
+diff --git a/Libraries/StyleSheet/StyleSheetTypes.js b/Libraries/StyleSheet/StyleSheetTypes.js
+index 39ee7da194c..fd26321ffd7 100644
+--- a/Libraries/StyleSheet/StyleSheetTypes.js
++++ b/Libraries/StyleSheet/StyleSheetTypes.js
+@@ -583,6 +583,28 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
+   borderTopWidth?: number | AnimatedNode,
+   opacity?: number | AnimatedNode,
+   elevation?: number,
++  cursor?: ?(
++    | 'alias'
++    | 'auto'
++    | 'col-resize'
++    | 'context-menu'
++    | 'copy'
++    | 'crosshair'
++    | 'default'
++    | 'disappearing-item'
++    | 'e-resize'
++    | 'grab'
++    | 'grabbing'
++    | 'n-resize'
++    | 'no-drop'
++    | 'not-allowed'
++    | 'pointer'
++    | 'row-resize'
++    | 's-resize'
++    | 'text'
++    | 'vertical-text'
++    | 'w-resize'
++  ),
+ |}>;
+
+ export type ____FontWeight_Internal =
+diff --git a/RNTester/js/examples/View/ViewExample.js b/RNTester/js/examples/View/ViewExample.js
+index 7f89797ed51..1b79b53999f 100644
+--- a/RNTester/js/examples/View/ViewExample.js
++++ b/RNTester/js/examples/View/ViewExample.js
+@@ -46,6 +46,66 @@ exports.examples = [
+     },
+   },
+   {
++    title: 'Cursor',
++    render(): React.Node {
++      return (
++        <>
++          <View style={{cursor: 'auto', padding: 10}}>
++            <Text style={{fontSize: 11}}>auto</Text>
++          </View>
++          <View style={{cursor: 'default', padding: 10}}>
++            <Text style={{fontSize: 11}}>default</Text>
++          </View>
++          <View style={{cursor: 'context-menu', padding: 10}}>
++            <Text style={{fontSize: 11}}>context-menu</Text>
++          </View>
++          <View style={{cursor: 'pointer', padding: 10}}>
++            <Text style={{fontSize: 11}}>pointer</Text>
++          </View>
++          <View style={{cursor: 'text', padding: 10}}>
++            <Text style={{fontSize: 11}}>text</Text>
++          </View>
++          <View style={{cursor: 'vertical-text', padding: 10}}>
++            <Text style={{fontSize: 11}}>vertical-text</Text>
++          </View>
++          <View style={{cursor: 'alias', padding: 10}}>
++            <Text style={{fontSize: 11}}>alias</Text>
++          </View>
++          <View style={{cursor: 'copy', padding: 10}}>
++            <Text style={{fontSize: 11}}>copy</Text>
++          </View>
++          <View style={{cursor: 'not-allowed', padding: 10}}>
++            <Text style={{fontSize: 11}}>not-allowed</Text>
++          </View>
++          <View style={{cursor: 'grab', padding: 10}}>
++            <Text style={{fontSize: 11}}>grab</Text>
++          </View>
++          <View style={{cursor: 'grabbing', padding: 10}}>
++            <Text style={{fontSize: 11}}>grabbing</Text>
++          </View>
++          <View style={{cursor: 'col-resize', padding: 10}}>
++            <Text style={{fontSize: 11}}>col-resize</Text>
++          </View>
++          <View style={{cursor: 'row-resize', padding: 10}}>
++            <Text style={{fontSize: 11}}>row-resize</Text>
++          </View>
++          <View style={{cursor: 'n-resize', padding: 10}}>
++            <Text style={{fontSize: 11}}>n-resize</Text>
++          </View>
++          <View style={{cursor: 'e-resize', padding: 10}}>
++            <Text style={{fontSize: 11}}>e-resize</Text>
++          </View>
++          <View style={{cursor: 's-resize', padding: 10}}>
++            <Text style={{fontSize: 11}}>s-resize</Text>
++          </View>
++          <View style={{cursor: 'w-resize', padding: 10}}>
++            <Text style={{fontSize: 11}}>w-resize</Text>
++          </View>
++        </>
++      );
++    },
++  },
++  {
+     title: 'Padding/Margin',
+     render(): React.Node {
+       const styles = StyleSheet.create({
+diff --git a/React/Views/RCTView.h b/React/Views/RCTView.h
+index 541ab487315..a9f8fb0ffae 100644
+--- a/React/Views/RCTView.h
++++ b/React/Views/RCTView.h
+@@ -16,6 +16,30 @@
+ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
+ #endif // TODO(macOS ISS#2323203)
+
++#if TARGET_OS_OSX
++typedef NS_ENUM(NSInteger, RCTCursor) {
++  RCTCursorAuto,
++  RCTCursorArrow,
++  RCTCursorIBeam,
++  RCTCursorCrosshair,
++  RCTCursorClosedHand,
++  RCTCursorOpenHand,
++  RCTCursorPointingHand,
++  RCTCursorResizeLeft,
++  RCTCursorResizeRight,
++  RCTCursorResizeLeftRight,
++  RCTCursorResizeUp,
++  RCTCursorResizeDown,
++  RCTCursorResizeUpDown,
++  RCTCursorDisappearingItem,
++  RCTCursorIBeamCursorForVerticalLayout,
++  RCTCursorOperationNotAllowed,
++  RCTCursorDragLink,
++  RCTCursorDragCopy,
++  RCTCursorContextualMenu,
++};
++#endif
++
+ @protocol RCTAutoInsetsProtocol;
+
+ @class RCTView;
+@@ -136,6 +160,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
+ /**
+  * macOS Properties
+  */
++@property (nonatomic, assign) RCTCursor cursor;
+ @property (nonatomic, copy) RCTDirectEventBlock onDoubleClick;
+ @property (nonatomic, copy) RCTDirectEventBlock onClick;
+ @property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
+diff --git a/React/Views/RCTView.m b/React/Views/RCTView.m
+index 05f822c756c..9454a7863a0 100644
+--- a/React/Views/RCTView.m
++++ b/React/Views/RCTView.m
+@@ -1388,6 +1388,73 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
+ #pragma mark - macOS Event Handler
+
+ #if TARGET_OS_OSX
++- (void)resetCursorRects
++{
++  NSCursor *cursor;
++
++  switch (self.cursor) {
++    case RCTCursorArrow:
++      cursor = [NSCursor arrowCursor];
++      break;
++    case RCTCursorClosedHand:
++      cursor = [NSCursor closedHandCursor];
++      break;
++    case RCTCursorContextualMenu:
++      cursor = [NSCursor contextualMenuCursor];
++      break;
++    case RCTCursorCrosshair:
++      cursor = [NSCursor crosshairCursor];
++      break;
++    case RCTCursorDisappearingItem:
++      cursor = [NSCursor disappearingItemCursor];
++      break;
++    case RCTCursorDragCopy:
++      cursor = [NSCursor dragCopyCursor];
++      break;
++    case RCTCursorDragLink:
++      cursor = [NSCursor dragLinkCursor];
++      break;
++    case RCTCursorIBeam:
++      cursor = [NSCursor IBeamCursor];
++      break;
++    case RCTCursorIBeamCursorForVerticalLayout:
++      cursor = [NSCursor IBeamCursorForVerticalLayout];
++      break;
++    case RCTCursorOpenHand:
++      cursor = [NSCursor openHandCursor];
++      break;
++    case RCTCursorOperationNotAllowed:
++      cursor = [NSCursor operationNotAllowedCursor];
++      break;
++    case RCTCursorPointingHand:
++      cursor = [NSCursor pointingHandCursor];
++      break;
++    case RCTCursorResizeDown:
++      cursor = [NSCursor resizeDownCursor];
++      break;
++    case RCTCursorResizeLeft:
++      cursor = [NSCursor resizeLeftCursor];
++      break;
++    case RCTCursorResizeLeftRight:
++      cursor = [NSCursor resizeLeftRightCursor];
++      break;
++    case RCTCursorResizeRight:
++      cursor = [NSCursor resizeRightCursor];
++      break;
++    case RCTCursorResizeUp:
++      cursor = [NSCursor resizeUpCursor];
++      break;
++    case RCTCursorResizeUpDown:
++      cursor = [NSCursor resizeUpDownCursor];
++      break;
++  }
++
++  [self discardCursorRects];
++  if (cursor) {
++    [self addCursorRect:self.bounds cursor:cursor];
++  }
++}
++
+ - (void)setOnDoubleClick:(RCTDirectEventBlock)block
+ {
+   if (_onDoubleClick != block) {
+diff --git a/React/Views/RCTViewManager.m b/React/Views/RCTViewManager.m
+index eee1196a08e..8c487be8409 100644
+--- a/React/Views/RCTViewManager.m
++++ b/React/Views/RCTViewManager.m
+@@ -24,6 +24,39 @@
+ #import "RCTTVView.h"
+ #endif
+
++#if TARGET_OS_OSX
++@implementation RCTConvert (UIView)
++
++RCT_ENUM_CONVERTER(
++    RCTCursor,
++    (@{
++      @"alias" : @(RCTCursorDragLink),
++      @"auto" : @(RCTCursorAuto),
++      @"col-resize" : @(RCTCursorResizeLeftRight),
++      @"context-menu" : @(RCTCursorContextualMenu),
++      @"copy" : @(RCTCursorDragCopy),
++      @"crosshair" : @(RCTCursorCrosshair),
++      @"default" : @(RCTCursorArrow),
++      @"disappearing-item" : @(RCTCursorDisappearingItem),
++      @"e-resize" : @(RCTCursorResizeRight),
++      @"grab" : @(RCTCursorOpenHand),
++      @"grabbing" : @(RCTCursorClosedHand),
++      @"n-resize" : @(RCTCursorResizeUp),
++      @"no-drop" : @(RCTCursorOperationNotAllowed),
++      @"not-allowed" : @(RCTCursorOperationNotAllowed),
++      @"pointer" : @(RCTCursorPointingHand),
++      @"row-resize" : @(RCTCursorResizeUpDown),
++      @"s-resize" : @(RCTCursorResizeDown),
++      @"text" : @(RCTCursorIBeam),
++      @"vertical-text" : @(RCTCursorIBeamCursorForVerticalLayout),
++      @"w-resize" : @(RCTCursorResizeLeft),
++    }),
++    RCTCursorAuto,
++    integerValue)
++
++@end
++#endif
++
+ #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+ @implementation RCTConvert (UIAccessibilityTraits)
+
+@@ -473,6 +506,7 @@ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
+ #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+ #pragma mark - macOS properties
+
++RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
+ RCT_EXPORT_VIEW_PROPERTY(onDoubleClick, RCTDirectEventBlock)
+ RCT_EXPORT_VIEW_PROPERTY(onClick, RCTDirectEventBlock)
+ RCT_EXPORT_VIEW_PROPERTY(onMouseEnter, RCTDirectEventBlock)
+--
+2.13.5
